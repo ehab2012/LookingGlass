@@ -1,0 +1,42 @@
+<html>
+  <body>
+    <h1>test</h1>
+    <div>
+     <!-- <form id="networktest" method="post" action="?">-->
+      <input id="hostbox" name="hostbox" type="text" value="8.8.8.8" />
+      <select id="cmd" name="cmd">
+        <option value="host">host</option>
+        <option value="mtr4">mtr</option>
+        <option value="mtr6">mtr6</option>
+        <option value="ping4" selected="selected">ping</option>
+        <option value="ping6">ping6</option>
+        <option value="traceroute4">traceroute</option>
+        <option value="traceroute6">traceroute6</option>
+      </select>
+      <button type="submit" id="submit" name="submit" onclick="sendmsg()">Run Test</button>
+    <!-- </form> -->
+    </div>
+
+    <pre id="results"></pre>
+    <script>
+/*      
+      var ws = new WebSocket("ws://127.0.0.1:8000/ws")
+      ws.onmessage = function(e) {
+        document.querySelector("code").innerHTML += e.data + "<br>"
+      }
+*/
+   url =  "ws://"+window.location.host + "/ws"
+   c = new WebSocket(url);
+   function sendmsg(){
+        div = document.getElementById("cmd");
+        c.send(div.value);
+    }
+
+   c.onmessage = function(msg){
+        document.getElementById("results").append(msg.data+"\n");
+    }
+    </script>
+
+
+  </body>
+</html>
