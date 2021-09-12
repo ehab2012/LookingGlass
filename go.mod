@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/Showmax/go-fqdn v1.0.0 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/fasthttp/websocket v1.4.3-rc.8 // indirect
 	github.com/klauspost/compress v1.13.5 // indirect

@@ -1,42 +1,117 @@
-<html>
-  <body>
-    <h1>test</h1>
-    <div>
-     <!-- <form id="networktest" method="post" action="?">-->
-      <input id="hostbox" name="hostbox" type="text" value="8.8.8.8" />
-      <select id="cmd" name="cmd">
-        <option value="host">host</option>
-        <option value="mtr4">mtr</option>
-        <option value="mtr6">mtr6</option>
-        <option value="ping4" selected="selected">ping</option>
-        <option value="ping6">ping6</option>
-        <option value="traceroute4">traceroute</option>
-        <option value="traceroute6">traceroute6</option>
-      </select>
-      <button type="submit" id="submit" name="submit" onclick="sendmsg()">Run Test</button>
-    <!-- </form> -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta name="description" content="LookingGlass - Open source golang looking glass">
+    <meta name="author" content="ehab">
+    <title>Looking Glass</title>
+    <link href="cerulean.css" rel="stylesheet">
+    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+       <!-- <header class="header nohighlight" id="overview">
+            <div class="row">
+                <div class="span12">
+                    <h1><a id="title" href="url">mrvm.net - Looking Glass Falkenstein, Germany</a></h1>
+                </div>
+            </div>
+        </header>
+    -->
+        <!-- Network Information -->
+        <section>
+            <div class="row">
+                <div id="information" class="span8">
+                    <div class="well">
+                        <span id="network-title" class="legend"></span>
+                        <p>Server Location: <b id="network-location"></b></p>
+                        <div style="margin-left: 10px;">
+                            <p>Test IPv4: <span id="ipv4"></span></p>
+                            <p>Test IPv6: <span id="ipv6"></span></p>
+                            <p>Test files: <span id="test-files"></span></p>
+                        </div>
+                        <p>Your IP Address: <b><a href="#tests" id="userip"></a></b></p>
+                    </div>
+                </div>
+
+                <div class="span4">
+                    <div class="well">
+                    <span class="legend">More Locations</span>
+                        <p><a href="//lg.atl.ramnode.com">Atlanta, GA</a></p>
+                        <p><a href="//lg.nyc.ramnode.com">New York, NY</a></p>
+                        <p><a href="//lg.la.ramnode.com">Los Angeles, CA</a></p>
+                        <p><a href="//lg.nl.ramnode.com">Alblasserdam, NL</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Network Tests -->
+        <section id="Network-tests">
+            <div class="row">
+                <div class="span12">
+                    <div class="well form-inline" id="networktest">
+                        <fieldset>
+                            <span class="legend">Network tests</span>
+                            <div id="hosterror" class="control-group">
+                                <div class="controls">
+                                    <input id="hostbox" name="hostbox" type="text" class="input-large"
+                                           placeholder="Host or IP address">
+                                </div>
+                            </div>
+                            <select id="cmd" name="cmd" class="input-medium" style="margin-left: 5px;">>
+                                <option value="host">host</option>
+                                <option value="mtr4">mtr</option>
+                                <option value="mtr6">mtr6</option>
+                                <option value="ping4" selected="selected">ping</option>
+                                <option value="ping6">ping6</option>
+                                <option value="traceroute4">traceroute</option>
+                                <option value="traceroute6">traceroute6</option>
+                            </select>
+                            <button type="submit" id="submit" class="btn btn-primary" style="margin-left: 10px;"
+                                    name="submit" onclick="sendmsg()">Run Test
+                            </button>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="Network-tests-results">
+            <div class="row">
+                <div class="span12">
+                    <pre id="results" style="display:none"></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer nohighlight">
+            <p class="pull-right">
+                <a href="#">Back to top</a>
+            </p>
+            <p>Inspired by <a href="https://github.com/telephone/LookingGlass">Telephone</a> <a
+                    href="https://github.com/ramnode/LookingGlass">Ramnode</a></p>
+            <p>Powered by golang backend <a href="https://github.com/ehab2012/LookingGlass">LookingGlass</a></p>
+        </footer>
+
     </div>
 
-    <pre id="results"></pre>
-    <script>
-/*      
-      var ws = new WebSocket("ws://127.0.0.1:8000/ws")
-      ws.onmessage = function(e) {
-        document.querySelector("code").innerHTML += e.data + "<br>"
-      }
-*/
-   url =  "ws://"+window.location.host + "/ws"
-   c = new WebSocket(url);
-   function sendmsg(){
-        div = document.getElementById("cmd");
-        c.send(div.value);
+<script>
+    if (window.WebSocket === undefined) {
+        document.getElementById("results").style.display = "block"
+        document.getElementById("results").append("Your browser does not support WebSockets");
+        document.getElementById("Network-tests").style.display = "none"
+        document.getElementById("submit").disabled = true;
     }
-
-   c.onmessage = function(msg){
-        document.getElementById("results").append(msg.data+"\n");
-    }
-    </script>
-
-
-  </body>
+    else
+    window.addEventListener('DOMContentLoaded', (event) => {
+        getip();
+        updateui();
+    });
+</script>
+</body>
 </html>
