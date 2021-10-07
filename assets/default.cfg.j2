@@ -1,0 +1,18 @@
+SITE_NAME="{{ SITE_NAME }}"
+THEME="{{ THEME }}"
+SITE_LOCATION="{{ SITE_LOCATION }}"
+TEST_FILES=[
+{%- for item in TEST_FILES %}
+"{{item}}"{{ "," if not loop.last }}
+{%- endfor %}
+]
+ADDITIONAL_LG_LIST=[
+{%- for item in ADDITIONAL_LG_LIST %}
+("{{item.url}}","{{item.location}}") {{ "," if not loop.last }}
+{%- endfor %}
+]
+TEST_IPV4="{{ TEST_IPV4 }}"
+TEST_IPV6="{{ TEST_IPV6 }}"
+
+
+

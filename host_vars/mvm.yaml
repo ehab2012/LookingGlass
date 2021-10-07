@@ -1,0 +1,7 @@
+SITE_LOCATION: "France, Reims – Ikoula"
+TEST_IPV4: "213.246.58.161"
+TEST_IPV6: "2a00:c70:1:213:246:58:d8c:1"
+TEST_FILES:
+  - 50MB
+  - 100MB
+  - 250MB

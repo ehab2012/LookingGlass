@@ -1,0 +1,24 @@
+# ansible-playbook -u root playbooks/04.configure_lg.yaml
+---
+- hosts: all
+  name: Install LookingGlass related file
+  gather_facts: yes
+  become: yes
+  tasks:
+
+    - name: Create the default.cfg from vars
+      become_method: su
+      become_user: lg
+      template:
+        src: ../assets/default.cfg.j2
+        dest: /home/lg/LookingGlass/instance/default.cfg
+
+    - name: Make sure a service units are enabled and restarted
+      ansible.builtin.systemd:
+        state: restarted
+        name: '{{ item }}'
+        enabled: yes
+      loop:
+        - uwsgi
+        - nginx
+

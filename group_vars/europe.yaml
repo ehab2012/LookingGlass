@@ -1,0 +1,11 @@
+SITE_NAME: "mrvm.net - Looking Glass"
+THEME: "united"
+ADDITIONAL_LG_LIST:
+  - { url: "//lg.sea.example.com" , location: "Germany, Falkenstein – Hetzner" }
+  - { url: "//lg2.se.com" , location: "Bulgaria, Sofia – Telepoint Data Center" }
+  - { url: "//lg3.se.com" , location: "Norway, Sandefjord – TerraHost" }
+  - { url: "//lg4.se.com" , location: "France, Reims – Ikoula" }
+  - { url: "//lg5.se.com" , location: "Italy, Milan – Prometeus" }
+TEST_FILES:
+  - 50MB
+  - 100MB

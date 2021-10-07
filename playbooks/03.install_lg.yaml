@@ -1,0 +1,64 @@
+# ansible-playbook -u root playbooks/03.install_lg.yaml
+---
+- hosts: all
+  name: Install LookingGlass related file
+  gather_facts: yes
+  become: yes
+  tasks:
+
+    - name: Copying the LG zip and extract it on remote
+      become_method: su
+      become_user: lg
+      unarchive:
+        src: ../assets/LookingGlass.tgz
+        dest: /home/lg/
+
+    - name: Install LG env with pip modules
+      become_method: su
+      become_user: lg
+      pip:
+        virtualenv: ~/.virtualenvs/LookingGlass
+        name:
+          - uwsgi
+          - flask
+          - jinja2
+          - click
+          - markupsafe
+          - werkzeug
+          - argparse
+          - itsdangerous
+          - sh
+
+    - name: Copy uwsgi ini and nginx conf files
+      copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+      loop:
+        - { src: ../assets/nginx/lg.conf, dest: /etc/nginx/sites-available/lg.conf }
+        - { src: ../assets/uwsgi/lg.ini, dest: /etc/uwsgi/apps-available/lg.ini }
+
+    - name: Create the soft links
+      ansible.builtin.file:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        state: link
+      loop:
+        - { src: /etc/nginx/sites-available/lg.conf, dest: /etc/nginx/sites-enabled/lg.conf }
+        - { src: /etc/uwsgi/apps-available/lg.ini, dest: /etc/uwsgi/apps-enabled/lg.ini }
+
+    - name: Remove default nginx file
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Generate the test files
+      ansible.builtin.command:
+        argv:
+          - dd
+          - if=/dev/zero
+          - of=/home/lg/LookingGlass/static/{{ item }}.test
+          - bs=1
+          - count=0
+          - seek={{ item }}
+        creates: /home/lg/LookingGlass/static/{{ item }}.test
+      loop: "{{ TEST_FILES }}"

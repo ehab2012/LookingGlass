@@ -1,0 +1,46 @@
+The following instructions details how to install LG using ansible. It is assumed that the remote host is new fresh mrvm.net nat vps created with a minimal debian 10 template.
+
+Through-out the next sections the remote vps will be called mvm and controller "local" is a linux shell based terminal. It is required to install ansible on local terminal.
+
+It is out of scope of this document to explain how to install ansible but can easily be done using the local distribution resouces.
+
+for example installing documenation can be found here https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html and some google result on debian 11 https://idroot.us/install-ansible-debian-11/
+
+
+Section 1 - general vps setup
+==============================
+the main target is to upgrade and prepare the vps for provisioning later with ansible.
+
+    on remote as root upgrade, reboot and install sudo, python3:
+    ------------------------------------------------------------
+      # apt-get --allow-releaseinfo-change update
+      # apt-get upgrade
+      # nano /etc/ssh/sshd_config   # after copying the pub key change yes to prohibit-password
+            .....
+            PermitRootLogin yes  #  prohibit-password
+
+      # reboot
+          # login again 
+      # apt-get install sudo python3
+
+
+    on local its best to add all the lg vps into the ssh config file and add pub key:
+    ---------------------------------------------------------------------------------
+      $ nano .ssh/config
+                .....
+                Host mvm
+                  HostName 213.246.58.161
+                  port 14221
+
+      $ ssh-copy-id -i ~/.ssh/id_dsa.pub root@mvm
+
+
+Section 2 - configuring inventory, variables and inital testing
+================================================================
+There are some yaml files that describe remotes and variables. It is advised to check and update these values where necessary.
+
+  hosts.yaml :
+      This is the main inventory file
+
+
+

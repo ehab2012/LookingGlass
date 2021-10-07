@@ -1,0 +1,27 @@
+#  ansible-playbook -u root playbooks/01.upgrade_reboot.yaml
+---
+- hosts: all
+  name: install sudo, update and upgrade also reboot in necessary
+  gather_facts: yes
+  become: yes
+  tasks:
+
+    - name: Update apt repo and cache on Debian/Ubuntu boxes
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 
+
+    - name: Upgrade all packages on servers
+      apt: upgrade=dist force_apt_get=yes autoremove=yes
+
+    - name: Check if a reboot is needed
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the box if kernel was upgraded
+      reboot:
+        msg: "A must reboot was initiated by Ansible for kernel updates .... wait couple of mintues and resume install."
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
