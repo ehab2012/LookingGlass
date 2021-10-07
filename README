@@ -29,8 +29,8 @@ the main target is to upgrade and prepare the vps for provisioning later with an
       $ nano .ssh/config
                 .....
                 Host mvm
-                  HostName 213.246.58.161
-                  port 14221
+                  HostName 60.26.58.11
+                  port 9224
 
       $ ssh-copy-id -i ~/.ssh/id_dsa.pub root@mvm
 
