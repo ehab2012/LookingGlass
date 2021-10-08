@@ -4,23 +4,34 @@ Through-out the next sections the remote vps will be called mvm and controller "
 
 It is out of scope of this document to explain how to install ansible but can easily be done using the local distribution resouces.
 
-for example installing documenation can be found here https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html and some google result on debian 11 https://idroot.us/install-ansible-debian-11/
+for example installing documentation can be found here https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html and some google result on debian 11 https://idroot.us/install-ansible-debian-11/
+
+The following sections applies to all that will host the LG page.
 
 
-Section 1 - general vps setup
-==============================
+Section 1 - basic/general vps setup
+=====================================
 the main target is to upgrade and prepare the vps for provisioning later with ansible.
 
     on remote as root upgrade, reboot and install sudo, python3:
     ------------------------------------------------------------
       # apt-get --allow-releaseinfo-change update
       # apt-get upgrade
+    
+    on local copy over public key
+    ---------------------------------------------------------------------------------
+
+      $ ssh-copy-id -i ~/.ssh/id_dsa.pub root@mvm
+      $ ssh root@mvm # test you can connect without entering the password
+
+    on remote
+    ---------------------------------------------------------------------------------    
       # nano /etc/ssh/sshd_config   # after copying the pub key change yes to prohibit-password
-            .....
-            PermitRootLogin yes  #  prohibit-password
+                .....
+                PermitRootLogin yes  #  prohibit-password
 
       # reboot
-          # login again 
+        then login again 
       # apt-get install sudo python3
 
 
@@ -31,8 +42,7 @@ the main target is to upgrade and prepare the vps for provisioning later with an
                 Host mvm
                   HostName 60.26.58.11
                   port 9224
-
-      $ ssh-copy-id -i ~/.ssh/id_dsa.pub root@mvm
+                .....
 
 
 Section 2 - configuring inventory, variables and inital testing
@@ -40,7 +50,86 @@ Section 2 - configuring inventory, variables and inital testing
 There are some yaml files that describe remotes and variables. It is advised to check and update these values where necessary.
 
   hosts.yaml :
-      This is the main inventory file
+      ...
+      hosts:
+        mvm:
+        # add other related hosts here
+
+  group_vars/europe.yaml:   # Default LG cfg - all hosts inherit those values; can be over ridden
+      SITE_NAME: "mrvm.net - Looking Glass"
+      THEME: "united"
+      ADDITIONAL_LG_LIST:
+        - { url: "//lg.sea.example.com" , location: "Germany, Falkenstein – Hetzner" }
+        ...
+      TEST_FILES:
+        - 50MB
+        - 100MB
+
+  host_vars/mvm.yaml :   # other details per host and one can over-ride the previous group values
+      SITE_LOCATION: "France, Reims – Ikoula"
+      TEST_IPV4: "60.26.58.11"
+      TEST_IPV6: "1a2:b50:5:a71:0a6:18:d6c:1"
+      TEST_FILES:
+        - 250MB
+
+To run a local test for generating a default.cfg file then locally run
+
+$ ansible-playbook -i localhost, playbooks/test.cfg.yaml'  # to change values edit the test.cfg.yaml file
+
+This should produce a default.cfg file
+
+To test the hosts connectivity with a simple ping:
+
+ $ ansible -c local all -m ping  # change all to a specific region e.g europe
+ $ ansible -c local mvm -m ping  # you can also test a single remote this way
+
+     mvm | SUCCESS => {
+        "changed": false,
+        "ping": "pong"
+    }
+
+
+Section 3 - Installing the lg stack and running the services
+=================================================================
+After editing the confg files and successfully testing connectivity. The following ordered steps and necessary to install the LG stack and get it up/running.
+
+on local run the following; if non root user is used then replace -u root to -u XXXX:
+
+$ ansible-playbook -u root playbooks/01.upgrade_reboot.yaml
+$ ansible-playbook -u root playbooks/02.install_stack.yaml   # takes a while; go and reply in LES or do some pushups
+$ ansible-playbook -u root playbooks/03.install_lg.yaml
+
+
+the above commands are only needed one time, the next step is the last step and can be applied multiple times when the vars are changed.
+
+$ ansible-playbook -u root playbooks/04.configure_lg.yaml 
+
+
+
+Sections 4 - Verifying the install
+==========================================
+The LG is listening to port 80 and is reachable by public ip or using a name.
+
+one way of testing hosts is by editing your hosts file locally
+
+nano /etc/hosts
+  
+  60.26.58.11   lg-fr-rns.natvm.net
+
+
+then on the browser visit http://lg-fr-rns.natvm.net/
+
+make sure you allow javascript and possible refresh the page as it loads other libs.
+
+
+
+
+
+
+
+
+
+
 
 
 

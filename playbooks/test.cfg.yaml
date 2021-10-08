@@ -1,0 +1,23 @@
+# ansible-playbook -i localhost, playbooks/test.cfg.yaml
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    SITE_NAME: "mrvm.net - Looking Glass"
+    SITE_LOCATION: "France, Reims – Ikoula"
+    THEME: "united"
+    ADDITIONAL_LG_LIST:
+      - { url: "//lg.sea.example.com" , location: "Germany, Falkenstein – Hetzner" }
+    TEST_IPV4: "113.16.12.61"
+    TEST_IPV6: "2a11:c35:3:113:545:28:a81:1"    
+    TEST_FILES:
+      - 100MB
+      - 500MB
+      - 1000MB      
+  tasks:
+
+    - name: create default.cfg from vars
+      template:
+        src: ../assets/default.cfg.j2
+        dest: ../default.cfg
