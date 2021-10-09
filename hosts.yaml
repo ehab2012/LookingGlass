@@ -3,7 +3,7 @@ all:
     europe:
       hosts:
         mvm:
-#        mvm2:          
+#        mvm2:
 #    america:
 #      hosts:
 #        l.deb2:

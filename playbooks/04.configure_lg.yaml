@@ -13,6 +13,32 @@
         src: ../assets/default.cfg.j2
         dest: /home/lg/LookingGlass/instance/default.cfg
 
+    - name: Find old test files
+      find:
+        paths: "/home/lg/LookingGlass/static"
+        patterns: "*.test"
+      register: files_to_delete
+
+    - name: Delete test files
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ files_to_delete.files }}"
+
+    - name: Generate test files
+      become_method: su
+      become_user: lg
+      ansible.builtin.command:
+        argv:
+          - dd
+          - if=/dev/zero
+          - of=/home/lg/LookingGlass/static/{{ item }}.test
+          - bs=1
+          - count=0
+          - seek={{ item }}
+        creates: /home/lg/LookingGlass/static/{{ item }}.test
+      loop: "{{ TEST_FILES }}"
+
     - name: Make sure a service units are enabled and restarted
       ansible.builtin.systemd:
         state: restarted

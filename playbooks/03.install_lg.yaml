@@ -50,15 +50,3 @@
       ansible.builtin.file:
         path: /etc/nginx/sites-enabled/default
         state: absent
-
-    - name: Generate the test files
-      ansible.builtin.command:
-        argv:
-          - dd
-          - if=/dev/zero
-          - of=/home/lg/LookingGlass/static/{{ item }}.test
-          - bs=1
-          - count=0
-          - seek={{ item }}
-        creates: /home/lg/LookingGlass/static/{{ item }}.test
-      loop: "{{ TEST_FILES }}"
